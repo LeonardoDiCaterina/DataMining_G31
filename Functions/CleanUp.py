@@ -1,6 +1,24 @@
 import pandas as pd
 import numpy as np
 
+
+def safe_divide(series1, series2):
+    ZeroDivisionError_count = 0
+    Exception_count = 0
+    result = []
+    for val1, val2 in zip(series1, series2):
+        try:
+            result.append(val1 / val2)
+        except ZeroDivisionError:
+            ZeroDivisionError_count += 1 
+            result.append(np.nan)
+        except Exception as e:
+            print(f"Error: {e}")
+            Exception_count += 1
+            result.append(np.nan)
+    return pd.Series(result)
+
+
 def cleanUp(df):
     """
     **Purpose:**
@@ -100,7 +118,7 @@ def cleanUp(df):
         non_numerical_columns.remove(PrimarKey)
         print("primary_key is non numerical")
     except:
-        print("primary_key is not non numerical")
+        print("primary_key is numerical")
     
     
     # in customer_region the missing values are better in nan so they do not show on the graphs
@@ -117,10 +135,10 @@ def cleanUp(df):
     df['used_promo']= df['last_promo'] != 'No_Promo'
     new_fetures_list.append("used_promo")    
     
-    DOW_col_sum = df[DOW_col].sum(axis=1)
+    DOW_col_sum = df[DOW_col].sum(axis=0)
     new_fetures_list.append("DOW_col_sum")
     
-    df['Product_by_Order'] = df['product_count'] /df['Total_Orders']
+    
     new_fetures_list.append("Product_by_Order")
 
     df['delta_day_order'] = df['last_order'] - df['first_order'] + 1
@@ -131,15 +149,15 @@ def cleanUp(df):
     df['tot_value_cui'] = df[cui_columns].sum(axis=1)
     new_fetures_list.append('tot_value_cui')
     
-    df['order_freq'] = df['product_count'] / df['delta_day_order']
-    df['value_freq'] = df['tot_value_cui'] / df['delta_day_order']
-    df['avg_order_value'] = df['tot_value_cui'] / df['product_count']
+    df['order_freq'] = safe_divide (df['product_count'],df['delta_day_order'])
+    df['value_freq'] = safe_divide (df['tot_value_cui'], df['delta_day_order'])
+    df['avg_order_value'] = safe_divide (df['tot_value_cui'], df['product_count'])
 
     new_fetures_list.append('order_freq')
     new_fetures_list.append('value_freq')
     new_fetures_list.append('avg_order_value')
     
-    df['avg_order_value'] = np.where(df['product_count'] != 0, df['tot_value_cui'] / df['product_count'], 0)
+    df['avg_order_value'] = safe_divide (df['tot_value_cui'],df['product_count'])
     new_fetures_list.append('avg_order_value')
 
     #-------------- create dictionary -----------
