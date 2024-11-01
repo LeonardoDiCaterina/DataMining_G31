@@ -1,5 +1,5 @@
-import pandas as pd
-import numpy as np
+import pandas as pd # type: ignore
+import numpy as np # type: ignore
 
 
 def safe_divide(series1, series2):
@@ -174,3 +174,31 @@ def cleanUp(df):
     'DOW_col': DOW_col
     }
     return df, columns_dict
+
+def count_outliers(df, column_name):
+    """
+    Count the number of outliers in a specified column of a DataFrame using the IQR method.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the data.
+    column_name (str): The name of the column to analyze.
+
+    Returns:
+    int: The number of outliers in the specified column.
+    """
+    # Calculate Q1 (25th percentile) and Q3 (75th percentile)
+    Q1 = df[column_name].quantile(0.25)
+    Q3 = df[column_name].quantile(0.75)
+
+    # Calculate IQR (Interquartile Range)
+    IQR = Q3 - Q1
+
+    # Define outliers as values below Q1 - 1.5*IQR or above Q3 + 1.5*IQR
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+
+    # Count the outliers
+    outliers = df[(df[column_name] < lower_bound) | (df[column_name] > upper_bound)]
+    outlier_count = outliers.shape[0]
+
+    return outlier_count
