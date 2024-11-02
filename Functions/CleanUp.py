@@ -171,31 +171,31 @@ def cleanUp(df):
     #----- (7) order_freq
     print("----- (7) order_freq")
    
-    df['order_freq'] = p.safe_divide(df['order_count'], df['delta_day_order'])
+    df['order_freq'] = safe_divide(df['order_count'], df['delta_day_order'])
     new_fetures_list.append('order_freq')
    
     #----- (8) value_freq
     print("----- (8) value_freq")
    
-    df['value_freq'] =p.safe_divide(df['tot_value_cui'], df['delta_day_order'])
+    df['value_freq'] =safe_divide(df['tot_value_cui'], df['delta_day_order'])
     new_fetures_list.append('value_freq')
    
     #----- (9) value_freq
     print("----- (9) value_freq")
    
-    df['product_freq'] = p.safe_divide(df['product_count'], df['delta_day_order'])
+    df['product_freq'] = safe_divide(df['product_count'], df['delta_day_order'])
     new_fetures_list.append('product_freq')
 
     #----- (10) avg_order_value
     print("----- (10) avg_order_value")
    
-    df['avg_order_value'] = p.safe_divide(df['tot_value_cui'], df['order_count'])
+    df['avg_order_value'] = safe_divide(df['tot_value_cui'], df['order_count'])
     new_fetures_list.append('avg_order_value')
     df['avg_order_value'] = np.where(df['product_count'] != 0, df['tot_value_cui'] / df['product_count'], 0)
     #----- (11) avg_product_value
     print("#----- (11) avg_product_value")
    
-    df['avg_product_value'] = p.safe_divide(df['tot_value_cui'], df['product_count'])
+    df['avg_product_value'] = safe_divide(df['tot_value_cui'], df['product_count'])
     new_fetures_list.append('avg_product_value')
 
 
