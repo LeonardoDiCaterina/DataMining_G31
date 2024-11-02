@@ -127,38 +127,78 @@ def cleanUp(df):
     #payment method is fine
     
     #-------------- building new key features -----------
+    print("-------------- building new key features -----------")
     new_fetures_list = []
-    # last_promo, on the other hand, is not very informative as it only tells us if someone never used a promo
-    # in fact if someone had used multiple promos we would not know.
-    # so the missing values are actually what gives us the information
+    
+    #----- (1) customer_city
+    print("----- (1) customer_city")
+    
+    df['customer_city'] = df['customer_region'].str[0]
+    new_fetures_list.append('customer_city')
+    #----- (2) used_promo
+    print("----- (2) used_promo")
+
     df.loc[df['last_promo'] == '-', 'last_promo'] = "No_Promo"
     df['used_promo']= df['last_promo'] != 'No_Promo'
-    new_fetures_list.append("used_promo")    
-    
-    DOW_col_sum = df[DOW_col].sum(axis=0)
-    new_fetures_list.append("DOW_col_sum")
-    
-    
-    new_fetures_list.append("Product_by_Order")
+    new_fetures_list.append("used_promo") 
 
+    #----- (3) order_count
+    print("----- (3) order_count")
+    
+    df['order_count'] = df[DOW_col].sum(axis=1)
+    new_fetures_list.append("order_count")
+
+
+   #----- (4) avg_product_by_order
+   print("----- (4) avg_product_by_order")
+   
+   df['avg_product_by_order'] = safe_divide(df['product_count'],df['order_count'])
+   new_fetures_list.append("avg_product_by_order")
+
+   #----- (5) delta_day_order
+   print("----- (5) delta_day_order")
+   
     df['delta_day_order'] = df['last_order'] - df['first_order'] + 1
     new_fetures_list.append('delta_day_order')
-    
-    
+
+   #----- (6) tot_value_cui
+   print("----- (6) tot_value_cui")
+   
     cui_columns = [col for col in df.columns if col.startswith('CUI')]
     df['tot_value_cui'] = df[cui_columns].sum(axis=1)
     new_fetures_list.append('tot_value_cui')
     
-    df['order_freq'] = safe_divide (df['product_count'],df['delta_day_order'])
-    df['value_freq'] = safe_divide (df['tot_value_cui'], df['delta_day_order'])
-    df['avg_order_value'] = safe_divide (df['tot_value_cui'], df['product_count'])
-
+   #----- (7) order_freq
+   print("----- (7) order_freq")
+   
+   df['order_freq'] = p.safe_divide(df['order_count'], df['delta_day_order'])
     new_fetures_list.append('order_freq')
-    new_fetures_list.append('value_freq')
-    new_fetures_list.append('avg_order_value')
-    
-    df['avg_order_value'] = safe_divide (df['tot_value_cui'],df['product_count'])
-    new_fetures_list.append('avg_order_value')
+   
+   #----- (8) value_freq
+   print("----- (8) value_freq")
+   
+   df['value_freq'] =p.safe_divide(df['tot_value_cui'], df['delta_day_order'])
+   new_fetures_list.append('value_freq')
+   
+   #----- (9) value_freq
+   print("----- (9) value_freq")
+   
+   df['product_freq'] = p.safe_divide(df['product_count'], df['delta_day_order'])
+   new_fetures_list.append('product_freq')
+
+   #----- (10) avg_order_value
+   print("----- (10) avg_order_value")
+   
+   df['avg_order_value'] = p.safe_divide(df['tot_value_cui'], df['order_count'])
+   new_fetures_list.append('avg_order_value')
+   df['avg_order_value'] = np.where(df['product_count'] != 0, df['tot_value_cui'] / df['product_count'], 0)
+   #----- (11) avg_product_value
+   print("#----- (11) avg_product_value")
+   
+    df['avg_product_value'] = p.safe_divide(df['tot_value_cui'], df['product_count'])
+    new_fetures_list.append('avg_product_value')
+
+
 
     #-------------- create dictionary -----------
     
