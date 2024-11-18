@@ -119,6 +119,18 @@ def cleanUp(df):
         print("primary_key is non numerical")
     except:
         print("primary_key is numerical")
+    #----------- Drop uslesless rows ------------
+    print("----------- Drop uslesless rows ------------")
+    l_df = len(df)  
+    df = df[df['tot_value_cui'] != 0]
+    print(f"tot_value_cui, removed {l_df - len(df)} rows")
+    l_df = len(df)
+    df = df[df['product_count'] != 0]
+    print(f"product_count, removed {l_df - len(df)} rows")
+    l_df = len(df)
+    df = df[df['order_count'] != 0]
+    print(f"order_count, removed {l_df - len(df)} rows")
+    l_df = len(df)
     
     #----------- Fill missing values ------------
     print("----------- Fill missing values ------------")
