@@ -90,12 +90,17 @@ def cleanUp(df):
     DOW_col_sum = df[DOW_col].sum(axis=1)
     HR_col_sum = df[HR_col].sum(axis=1)
     Delta_DOW_HR = DOW_col_sum-HR_col_sum
+    if Delta_DOW_HR.sum() != 0:
+        print("There are inconsistencies between DOW and HR columns")
+        print(Delta_DOW_HR.sum())
+        
     
-    HR_col_from1 = HR_col.copy()
-    HR_col_from1.remove('HR_0')   
+        HR_col_from1 = HR_col.copy()
+        HR_col_from1.remove('HR_0')   
     
-    HR_col_from1_sum = df[HR_col_from1].sum(axis=1)
-    df['HR_0'] = DOW_col_sum - HR_col_from1_sum 
+        HR_col_from1_sum = df[HR_col_from1].sum(axis=1)
+        print("filling HR_0")
+        df['HR_0'] = DOW_col_sum - HR_col_from1_sum 
         
     
     #-----------identify the numerical columns -----------
@@ -119,18 +124,6 @@ def cleanUp(df):
         print("primary_key is non numerical")
     except:
         print("primary_key is numerical")
-    #----------- Drop uslesless rows ------------
-    print("----------- Drop uslesless rows ------------")
-    l_df = len(df)  
-    df = df[df['tot_value_cui'] != 0]
-    print(f"tot_value_cui, removed {l_df - len(df)} rows")
-    l_df = len(df)
-    df = df[df['product_count'] != 0]
-    print(f"product_count, removed {l_df - len(df)} rows")
-    l_df = len(df)
-    df = df[df['order_count'] != 0]
-    print(f"order_count, removed {l_df - len(df)} rows")
-    l_df = len(df)
     
     #----------- Fill missing values ------------
     print("----------- Fill missing values ------------")
@@ -221,6 +214,19 @@ def cleanUp(df):
    
     df['avg_product_value'] = safe_divide(df['tot_value_cui'], df['product_count'])
     new_fetures_list.append('avg_product_value')
+    
+    #----------- Drop uslesless rows ------------
+    print("----------- Drop uslesless rows ------------")
+    l_df = len(df)  
+    df = df[df['tot_value_cui'] != 0]
+    print(f"tot_value_cui, removed {l_df - len(df)} rows")
+    l_df = len(df)
+    df = df[df['product_count'] != 0]
+    print(f"product_count, removed {l_df - len(df)} rows")
+    l_df = len(df)
+    df = df[df['order_count'] != 0]
+    print(f"order_count, removed {l_df - len(df)} rows")
+    l_df = len(df)
 
 
 
