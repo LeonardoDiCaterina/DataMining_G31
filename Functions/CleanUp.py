@@ -110,8 +110,8 @@ def cleanUp(df):
         print("primary_key is not numerical")
     
 
-    #-----------identify the non numerical columns--------------
-    print("-----------identify the non numerical columns -----------")
+    #-----------Identify the non numerical columns--------------
+    print("-----------Identify the non numerical columns -----------")
 
     non_numerical_columns = df.select_dtypes(include=['object']).columns.tolist()
     try:
@@ -120,6 +120,18 @@ def cleanUp(df):
     except:
         print("primary_key is numerical")
     
+    #----------- Fill missing values ------------
+    print("----------- Fill missing values ------------")
+    
+    # in customer_age we willl fill the missing values with the median because the distribution is skewed
+    df['customer_age'] = df['customer_age'].fillna(df['customer_age'].median())
+    print(f"customer_age, subsitution with median: {df['customer_age'].median()}")
+    
+    # in first_order we will fill the missing values with 0 because we assume that the customer where there before the stat of the dataset
+    df['first_order'] = df['first_order'].fillna(0)
+    print(f"first_order, subsitution with 0")
+    
+    #
     
     # in customer_region the missing values are better in nan so they do not show on the graphs
     df.loc[df['customer_region'] == '-', 'customer_region'] = np.nan
